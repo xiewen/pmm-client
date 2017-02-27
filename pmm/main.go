@@ -498,13 +498,15 @@ ForLoop1:
 	// Find missing services: Consul services that are missing locally.
 ForLoop2:
 	for _, svc := range node.Services {
-		svcName := fmt.Sprintf("pmm-%s-%d", strings.Replace(svc.Service, ":", "-", 1), svc.Port)
-		for _, s := range services {
-			if s == svcName {
-				continue ForLoop2
+		if svc.Service != "consul" {
+			svcName := fmt.Sprintf("pmm-%s-%d", strings.Replace(svc.Service, ":", "-", 1), svc.Port)
+			for _, s := range services {
+				if s == svcName {
+					continue ForLoop2
+				}
 			}
+			missingServices = append(missingServices, svc.ID)
 		}
-		missingServices = append(missingServices, svc.ID)
 	}
 
 	return orphanedServices, missingServices
